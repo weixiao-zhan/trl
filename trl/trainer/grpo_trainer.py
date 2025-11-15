@@ -1682,12 +1682,16 @@ class GRPOTrainer(BaseTrainer):
                 nanmax(self.accelerator.gather(max_importance_sampling_ratio)).item()
             )
 
+        # Slice rewards to keep only the local part of the data (same as advantages)
+        rewards_local = rewards[process_slice]
+        
         output = {
             "prompt_ids": prompt_ids,
             "prompt_mask": prompt_mask,
             "completion_ids": completion_ids,
             "completion_mask": completion_mask,
             "advantages": advantages,
+            "rewards": rewards_local,
             "num_items_in_batch": num_items_in_batch,
         }
         if old_per_token_logps is not None:
